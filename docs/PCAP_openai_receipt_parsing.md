@@ -82,7 +82,7 @@ Display parsed merchant and amount in flash message
 ### Configuration
 - `config.json` required values:
   - `openai.api_key_file`: File path to OpenAI API key
-  - `openai.model`: Model to use (e.g., `gpt-4-mini`)
+  - `openai.model`: Model to use (e.g., `gpt-4o-mini`)
   - `upload.max_size_mb`: Max upload size (e.g., 10)
   - `upload.allowed_receipt_formats`: Array of allowed formats
 
@@ -95,7 +95,7 @@ Display parsed merchant and amount in flash message
 ## OpenAI Integration Details
 
 ### Model
-- **Model**: `gpt-4-mini` (configurable in config.json)
+- **Model**: `gpt-4o-mini` (configurable in config.json)
 - **Capability**: Vision (image understanding)
 
 ### API Call Format
@@ -139,7 +139,7 @@ The service sends a structured prompt asking OpenAI to:
 {
   "openai": {
     "api_key_file": "C:\\Users\\tim\\Desktop\\openai_key_for_financial_app.txt",
-    "model": "gpt-4-mini"
+    "model": "gpt-4o-mini"
   },
   "upload": {
     "max_size_mb": 10,
@@ -153,6 +153,15 @@ The service sends a structured prompt asking OpenAI to:
 - **Format**: Plain text, single line
 - **Content**: OpenAI API key (sk-...)
 - **Permissions**: File must be readable by Flask process
+
+---
+
+## Model Compatibility Telemetry
+- Original issue: `gpt-4-mini` was configured but not available for the current account, causing `model_not_found` errors.
+- Operational symptoms: OpenAI API calls failed with 404 invalid_request_error and the app fell back to safe parse behavior.
+- Fix strategy: replace the invalid fallback model with `gpt-4o-mini`, a validated vision-capable model accessible to the account.
+- Validated replacement: `gpt-4o-mini` is now the configured default for receipt parsing and OpenAI requests.
+- Runtime observations: when the model is available, parsed receipt fields should contain `merchant`, `amount`, and `date`, and dashboard persistence should continue normally.
 
 ---
 
@@ -296,7 +305,7 @@ Tests validate:
 ### Issue: "Received empty response from OpenAI"
 **Cause**: Model doesn't support vision or malformed request
 **Solution**:
-1. Verify model supports vision (gpt-4-mini, gpt-4-vision, etc.)
+1. Verify model supports vision (gpt-4o-mini, gpt-4-vision, etc.)
 2. Check image encoding is base64
 3. Verify image format is supported (JPEG, PNG, GIF, WebP)
 

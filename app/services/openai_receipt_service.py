@@ -18,7 +18,7 @@ class OpenAIReceiptParsingService:
 
     def __init__(self):
         self.api_key = None
-        self.model = config.get('openai.model', 'gpt-4-mini')
+        self.model = config.get('openai.model', 'gpt-4o-mini')
         api_key_file = config.get('openai.api_key_file')
         self._client = None
         self._load_api_key(api_key_file)
