@@ -65,10 +65,14 @@ def test_parse_receipt_image_file_exists(service, sample_receipt_path):
     assert 'date' in result
 
 
-@patch('openai.ChatCompletion.create')
-def test_openai_api_call(mock_create, service, sample_receipt_path):
-    """Test OpenAI API call with mocked response."""
-    # Mock successful OpenAI response
+@patch('openai.OpenAI')
+def test_openai_api_call(mock_openai_class, service, sample_receipt_path):
+    """Test OpenAI API call with mocked response (modern SDK v1.0+)."""
+    # Mock successful OpenAI response using modern SDK structure
+    mock_client = MagicMock()
+    mock_openai_class.return_value = mock_client
+    
+    # Mock the response object structure for modern SDK
     mock_response = MagicMock()
     mock_response.choices[0].message.content = json.dumps({
         'merchant': 'Test Store',
@@ -76,10 +80,11 @@ def test_openai_api_call(mock_create, service, sample_receipt_path):
         'date': '2025-05-21',
         'category': 'groceries'
     })
-    mock_create.return_value = mock_response
+    mock_client.chat.completions.create.return_value = mock_response
     
     # Set dummy API key to trigger API call
     service.api_key = 'sk-dummy-test-key'
+    service._client = None  # Reset client to trigger lazy load
     
     result = service.parse_receipt_image(sample_receipt_path)
     # Will either call API (if mocked) or return fallback

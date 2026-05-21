@@ -45,7 +45,7 @@ class OpenAIReceiptParsingService:
             log_error(ErrorCategory.API_KEY_ERROR, "Failed to read OpenAI API key file", e)
 
     def _get_client(self):
-        """Lazy-load OpenAI client."""
+        """Lazy-load modern OpenAI client (SDK v1.0+)."""
         if self._client is not None:
             return self._client
         
@@ -54,16 +54,16 @@ class OpenAIReceiptParsingService:
             return None
         
         try:
-            import openai
-            openai.api_key = self.api_key
-            self._client = openai
+            from openai import OpenAI
+            self._client = OpenAI(api_key=self.api_key)
+            log_info("OpenAI client initialized (SDK v1.0+)")
             return self._client
         except Exception as e:
             log_error(ErrorCategory.OPENAI_API_ERROR, "Failed to initialize OpenAI client", e)
             return None
 
     def parse_receipt_image(self, file_path):
-        """Parse receipt image using OpenAI vision API.
+        """Parse receipt image using OpenAI vision API (modern SDK).
         
         Args:
             file_path: Path to receipt image file
@@ -120,8 +120,8 @@ class OpenAIReceiptParsingService:
             }
             media_type = media_type_map.get(ext, 'image/jpeg')
             
-            # Call OpenAI ChatCompletion with vision
-            response = client.ChatCompletion.create(
+            # Call OpenAI ChatCompletion with vision using modern SDK
+            response = client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {
@@ -152,10 +152,10 @@ Return ONLY valid JSON, no other text. If a field cannot be extracted, use empty
                 max_tokens=500
             )
             
-            # Parse response
+            # Parse response using modern SDK response object
             response_text = response.choices[0].message.content.strip()
             parsed = json.loads(response_text)
-            log_info(f"Receipt parsed successfully: {parsed.get('merchant', 'unknown')}")
+            log_info(f"Receipt parsed successfully via OpenAI: {parsed.get('merchant', 'unknown')}")
             
             # Normalize parsed data
             return {
@@ -163,7 +163,7 @@ Return ONLY valid JSON, no other text. If a field cannot be extracted, use empty
                 'amount': str(parsed.get('amount', '0.00')).strip(),
                 'date': str(parsed.get('date', '')).strip(),
                 'category': str(parsed.get('category', 'other')).strip().lower() or 'other',
-                'note': f"Parsed from receipt: {os.path.basename(file_path)}"
+                'note': f"OpenAI parsed: {os.path.basename(file_path)}"
             }
         
         except json.JSONDecodeError as e:

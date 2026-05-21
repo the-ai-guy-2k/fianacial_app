@@ -347,6 +347,61 @@ User uploads receipt image
 
 ---
 
+## SDK Compatibility Fix (v1.0+)
+
+### Background
+Initial implementation used deprecated OpenAI Python SDK syntax:
+```python
+import openai
+openai.api_key = "sk-..."
+response = openai.ChatCompletion.create(...)
+```
+
+This syntax was removed in OpenAI SDK v1.0+.
+
+### Problem
+Application would fail with:
+- `AttributeError: module 'openai' has no attribute 'ChatCompletion'`
+- Error category: `OPENAI_API_ERROR`
+- The modern SDK uses a client-based pattern instead
+
+### Solution
+Updated to modern OpenAI SDK (v1.0+) client pattern:
+```python
+from openai import OpenAI
+
+client = OpenAI(api_key=api_key)
+response = client.chat.completions.create(...)
+```
+
+### Implementation Details
+- Import `OpenAI` class directly
+- Instantiate client with API key in `_get_client()`
+- Use `client.chat.completions.create()` for API calls
+- Response structure is same (`.choices[0].message.content`)
+- All error handling remains consistent
+
+### Why Modern SDK?
+- Legacy SDK (v0.x) is deprecated and unsupported
+- Modern SDK (v1.0+) is the official standard
+- Pinning old versions creates technical debt
+- Aligning with industry standard practice
+
+### Testing
+- Tests updated to mock modern SDK: `from openai import OpenAI`
+- Mocks patch `openai.OpenAI` constructor
+- Mock client returns proper response structure
+- No live API calls in CI/CD pipeline
+
+### Verification
+- All 15+ tests pass with modern SDK
+- Local receipt upload works
+- OpenAI API calls execute successfully
+- Error handling still operational
+- Fallback behavior unchanged
+
+---
+
 ## Deployment Impact
 
 ### Breaking Changes
