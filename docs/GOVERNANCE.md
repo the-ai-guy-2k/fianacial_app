@@ -29,6 +29,20 @@ feat: add preflight validation for config and API key
 - All git operations performed by Copilot workflow automation
 - No manual hotfixes to deployable branch
 
+## OpenAI SDK Compatibility Governance
+
+- Do not pin legacy SDK versions unless explicitly approved
+- Prefer modern SDK-compatible code over downgrading dependencies
+- Fix code to support the current OpenAI SDK
+- Log SDK compatibility issues and document fixes
+
+## AI Response Format Governance
+
+- AI responses used by application logic must be constrained, validated, and safely parsed before use
+- Prefer strict JSON response instructions for structured outputs
+- Handle markdown wrappers, empty responses, and malformed JSON with fallback behavior
+- Log response length, preview, and validation outcome without exposing secrets
+
 ## MVP Scope Lock
 
 Do NOT add:

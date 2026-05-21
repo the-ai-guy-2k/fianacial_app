@@ -12,7 +12,7 @@ class OpenAIService:
 
     def __init__(self):
         self.api_key = None
-        self.model = config.get('openai.model', 'gpt-4-mini')
+        self.model = config.get('openai.model', 'gpt-4o-mini')
         api_key_file = config.get('openai.api_key_file')
         
         if api_key_file and os.path.exists(api_key_file):

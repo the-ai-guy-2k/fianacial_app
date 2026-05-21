@@ -5,11 +5,13 @@ from app.utils.storage import load_transactions, save_transactions, get_default_
 from app.utils.normalize import normalize_transaction
 from app.utils.config_manager import config
 from app.services.openai_service import OpenAIService
+from app.services.openai_receipt_service import OpenAIReceiptParsingService
 from app.utils.logging_service import log_error, log_info, ErrorCategory
 
 bp = Blueprint('main', __name__)
 
 ai = OpenAIService()
+receipt_parser = OpenAIReceiptParsingService()
 
 # Default goal for MVP testing
 DEFAULT_GOAL = {
@@ -74,14 +76,16 @@ def upload_receipt():
             flash('Failed to save receipt', 'error')
             return redirect(url_for('main.upload_receipt'))
         
-        # Parse receipt
-        parsed = ai.parse_receipt(path)
+        # Parse receipt using OpenAI
+        parsed = receipt_parser.parse_receipt_image(path)
         txs = load_transactions()
-        txs.append(normalize_transaction(parsed))
+        tx = normalize_transaction(parsed)
+        txs.append(tx)
         if save_transactions(txs):
-            flash('Receipt uploaded and parsed', 'success')
+            log_info(f"Receipt parsed and transaction created: {parsed.get('merchant', 'unknown')} - ${parsed.get('amount', '0.00')}")
+            flash(f"Receipt parsed: {parsed.get('merchant', 'Receipt')} - ${parsed.get('amount', '0.00')}", 'success')
         else:
-            flash('Receipt uploaded but failed to save transaction', 'warning')
+            flash('Receipt parsed but failed to save transaction', 'warning')
         return redirect(url_for('main.dashboard'))
     
     return render_template('upload_receipt.html')
