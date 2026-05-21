@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Dashboard</h2>
+
+<section>
+  <h3>Goals</h3>
+  <ul>
+    {% for goal in goals %}
+      <li><strong>{{ goal.name }}</strong>: ${{ goal.target }} - {{ goal.description }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h3>Transactions</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>Merchant</th>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in transactions %}
+        <tr>
+          <td>{{ t.id[:8] }}</td>
+          <td>{{ t.date }}</td>
+          <td>{{ t.merchant }}</td>
+          <td>{{ t.category }}</td>
+          <td>${{ t.amount }}</td>
+          <td>{{ t.note }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">No transactions yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Financial Nebula Node - MVP</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Financial Nebula Node — MVP</h1>
+      <nav>
+        <a href="/">Dashboard</a> |
+        <a href="/upload_receipt">Upload Receipt</a> |
+        <a href="/upload_csv">Upload CSV</a> |
+        <a href="/add_transaction">Add Transaction</a> |
+        <a href="/insights">Insights</a>
+      </nav>
+    </header>
+    <main>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flashes">
+            {% for cat, msg in messages %}
+              <li class="{{ cat }}">{{ msg }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+    <footer>
+      <small>Local-first MVP — Financial Nebula Node</small>
+    </footer>
+  </body>
+</html>

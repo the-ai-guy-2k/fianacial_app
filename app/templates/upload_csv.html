@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Upload CSV</h2>
+<form method="post" enctype="multipart/form-data">
+  <label>CSV file: <input type="file" name="csvfile" accept=".csv" required></label>
+  <br/><small>CSV header should include: date, merchant, amount, category (optional), note (optional)</small>
+  <br/><small>Max size: 10MB</small>
+  <br/><br/>
+  <button type="submit">Upload</button>
+</form>
+{% endblock %}

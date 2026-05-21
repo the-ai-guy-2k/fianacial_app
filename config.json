@@ -1,0 +1,18 @@
+{
+  "flask": {
+    "secret_key": "theaiguyfreakout"
+  },
+  "openai": {
+    "api_key_file": "C:\\Users\\tim\\Desktop\\openai_key_for_financial_app.txt",
+    "model": "gpt-4-mini"
+  },
+  "upload": {
+    "folder": "uploads",
+    "max_size_mb": 10,
+    "allowed_receipt_formats": ["png", "jpg", "jpeg", "webp"],
+    "allowed_csv_format": "csv"
+  },
+  "data": {
+    "folder": "data"
+  }
+}

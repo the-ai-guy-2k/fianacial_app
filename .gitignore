@@ -1,0 +1,9 @@
+venv/
+.openai_api_key
+uploads/
+data/transactions.json
+data/goals.json
+logs/
+__pycache__/
+*.pyc
+.pytest_cache/
