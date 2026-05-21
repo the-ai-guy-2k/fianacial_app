@@ -43,6 +43,13 @@ feat: add preflight validation for config and API key
 - Handle markdown wrappers, empty responses, and malformed JSON with fallback behavior
 - Log response length, preview, and validation outcome without exposing secrets
 
+## Operational Logs Governance
+
+- Every feature add must update `CHANGELOG.md`.
+- Every runtime bug must update `docs/BUG_FIX_LOG.md`.
+- Every AI/Copilot execution failure should be classified and logged.
+- Logs should support future troubleshooting, passdowns, and operational continuity.
+
 ## MVP Scope Lock
 
 Do NOT add:
