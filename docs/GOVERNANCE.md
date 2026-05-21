@@ -36,6 +36,13 @@ feat: add preflight validation for config and API key
 - Fix code to support the current OpenAI SDK
 - Log SDK compatibility issues and document fixes
 
+## AI Response Format Governance
+
+- AI responses used by application logic must be constrained, validated, and safely parsed before use
+- Prefer strict JSON response instructions for structured outputs
+- Handle markdown wrappers, empty responses, and malformed JSON with fallback behavior
+- Log response length, preview, and validation outcome without exposing secrets
+
 ## MVP Scope Lock
 
 Do NOT add:

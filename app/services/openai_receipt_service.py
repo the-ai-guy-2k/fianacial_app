@@ -62,6 +62,48 @@ class OpenAIReceiptParsingService:
             log_error(ErrorCategory.OPENAI_API_ERROR, "Failed to initialize OpenAI client", e)
             return None
 
+    def _strip_json_code_fence(self, text):
+        """Remove markdown code fences or backtick wrappers from model output."""
+        cleaned = text.strip()
+        if cleaned.startswith("```") and cleaned.endswith("```"):
+            lines = cleaned.splitlines()
+            if len(lines) >= 3:
+                return "\n".join(lines[1:-1]).strip()
+        if cleaned.startswith("`") and cleaned.endswith("`"):
+            return cleaned.strip("`").strip()
+        return cleaned
+
+    def _safe_parse_json(self, raw_text):
+        """Safely parse JSON from raw OpenAI response text."""
+        response_text = raw_text.strip()
+        raw_length = len(response_text)
+        preview = response_text[:500]
+
+        if not response_text:
+            log_error(
+                ErrorCategory.VALIDATION_ERROR,
+                "OpenAI response empty after stripping whitespace"
+            )
+            return None
+
+        cleaned_text = self._strip_json_code_fence(response_text)
+        if not cleaned_text:
+            log_error(
+                ErrorCategory.VALIDATION_ERROR,
+                f"OpenAI response empty after removing code fences | raw length: {raw_length}"
+            )
+            return None
+
+        try:
+            return json.loads(cleaned_text)
+        except json.JSONDecodeError as e:
+            log_error(
+                ErrorCategory.VALIDATION_ERROR,
+                f"Failed to parse OpenAI response as JSON | raw length: {raw_length} | preview: {preview}",
+                e
+            )
+            return None
+
     def parse_receipt_image(self, file_path):
         """Parse receipt image using OpenAI vision API (modern SDK).
         
@@ -131,14 +173,20 @@ class OpenAIReceiptParsingService:
                                 "type": "text",
                                 "text": """Analyze this receipt image and extract the following information in JSON format:
 {
-    "merchant": "store/restaurant name",
-    "amount": "total amount as number",
-    "date": "transaction date in YYYY-MM-DD format or empty string",
-    "category": "inferred category: food, groceries, fuel, healthcare, entertainment, utilities, other",
-    "line_items": [{"description": "item", "price": "price"}]
+  "merchant": "",
+  "date": "",
+  "total": 0.0,
+  "category": "",
+  "items": [],
+  "confidence": "",
+  "raw_summary": ""
 }
 
-Return ONLY valid JSON, no other text. If a field cannot be extracted, use empty string for text fields or 0 for amounts."""
+Return ONLY valid JSON.
+Do not include markdown.
+Do not include code fences.
+Do not include explanation outside JSON.
+If a field is unknown, use an empty string, 0.0, empty list, or \"low\"."""
                             },
                             {
                                 "type": "image_url",
@@ -153,17 +201,27 @@ Return ONLY valid JSON, no other text. If a field cannot be extracted, use empty
             )
             
             # Parse response using modern SDK response object
-            response_text = response.choices[0].message.content.strip()
-            parsed = json.loads(response_text)
+            response_text = response.choices[0].message.content
+            parsed = self._safe_parse_json(response_text)
+            if not isinstance(parsed, dict):
+                msg = "OpenAI response did not contain valid JSON object"
+                log_error(ErrorCategory.VALIDATION_ERROR, msg)
+                return self._fallback_transaction(file_path, msg)
+
             log_info(f"Receipt parsed successfully via OpenAI: {parsed.get('merchant', 'unknown')}")
             
             # Normalize parsed data
+            raw_amount = parsed.get('total', parsed.get('amount', '0.00'))
+            amount_str = str(raw_amount).strip() if raw_amount is not None else '0.00'
+            if not amount_str:
+                amount_str = '0.00'
+
             return {
                 'merchant': str(parsed.get('merchant', '')).strip(),
-                'amount': str(parsed.get('amount', '0.00')).strip(),
+                'amount': amount_str,
                 'date': str(parsed.get('date', '')).strip(),
                 'category': str(parsed.get('category', 'other')).strip().lower() or 'other',
-                'note': f"OpenAI parsed: {os.path.basename(file_path)}"
+                'note': str(parsed.get('raw_summary', f"OpenAI parsed: {os.path.basename(file_path)}")).strip()
             }
         
         except json.JSONDecodeError as e:

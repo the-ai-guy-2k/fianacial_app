@@ -93,6 +93,93 @@ def test_openai_api_call(mock_openai_class, service, sample_receipt_path):
     assert 'amount' in result
 
 
+@patch('openai.OpenAI')
+def test_openai_json_response_valid(mock_openai_class, service, sample_receipt_path):
+    """Test valid JSON response is parsed correctly."""
+    mock_client = MagicMock()
+    mock_openai_class.return_value = mock_client
+    mock_response = MagicMock()
+    mock_response.choices[0].message.content = json.dumps({
+        'merchant': 'Test Store',
+        'total': 42.5,
+        'date': '2025-05-21',
+        'category': 'groceries',
+        'items': [],
+        'confidence': 'high',
+        'raw_summary': 'Parsed receipt successfully.'
+    })
+    mock_client.chat.completions.create.return_value = mock_response
+    service.api_key = 'sk-dummy-test-key'
+    service._client = None
+
+    result = service.parse_receipt_image(sample_receipt_path)
+    assert result['merchant'] == 'Test Store'
+    assert float(result['amount']) == 42.5
+    assert result['date'] == '2025-05-21'
+    assert result['category'] == 'groceries'
+    assert 'Parsed receipt successfully.' in result['note']
+
+
+@patch('openai.OpenAI')
+def test_openai_json_response_with_code_fence(mock_openai_class, service, sample_receipt_path):
+    """Test JSON response wrapped in markdown code fences is parsed correctly."""
+    mock_client = MagicMock()
+    mock_openai_class.return_value = mock_client
+    raw_json = json.dumps({
+        'merchant': 'Fence Store',
+        'total': 13.75,
+        'date': '2025-06-01',
+        'category': 'food',
+        'items': [],
+        'confidence': 'medium',
+        'raw_summary': 'Parsed from fenced JSON.'
+    })
+    mock_response = MagicMock()
+    mock_response.choices[0].message.content = f"```json\n{raw_json}\n```"
+    mock_client.chat.completions.create.return_value = mock_response
+    service.api_key = 'sk-dummy-test-key'
+    service._client = None
+
+    result = service.parse_receipt_image(sample_receipt_path)
+    assert result['merchant'] == 'Fence Store'
+    assert float(result['amount']) == 13.75
+    assert result['category'] == 'food'
+
+
+@patch('openai.OpenAI')
+def test_openai_empty_response_fallback(mock_openai_class, service, sample_receipt_path):
+    """Test empty OpenAI response triggers fallback."""
+    mock_client = MagicMock()
+    mock_openai_class.return_value = mock_client
+    mock_response = MagicMock()
+    mock_response.choices[0].message.content = ''
+    mock_client.chat.completions.create.return_value = mock_response
+    service.api_key = 'sk-dummy-test-key'
+    service._client = None
+
+    result = service.parse_receipt_image(sample_receipt_path)
+    assert result['amount'] == '0.00'
+    assert result['category'] == 'uncategorized'
+    assert 'fallback' in result['note'].lower()
+
+
+@patch('openai.OpenAI')
+def test_openai_malformed_json_response_fallback(mock_openai_class, service, sample_receipt_path):
+    """Test malformed JSON response triggers fallback."""
+    mock_client = MagicMock()
+    mock_openai_class.return_value = mock_client
+    mock_response = MagicMock()
+    mock_response.choices[0].message.content = '{merchant: "Bad Store", total: 22.00,}'
+    mock_client.chat.completions.create.return_value = mock_response
+    service.api_key = 'sk-dummy-test-key'
+    service._client = None
+
+    result = service.parse_receipt_image(sample_receipt_path)
+    assert result['amount'] == '0.00'
+    assert result['category'] == 'uncategorized'
+    assert 'fallback' in result['note'].lower()
+
+
 def test_category_normalization(service):
     """Test category field normalization."""
     fallback = service._fallback_transaction('/tmp/test.jpg')

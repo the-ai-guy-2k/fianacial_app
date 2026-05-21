@@ -165,6 +165,15 @@ The service sends a structured prompt asking OpenAI to:
 
 ---
 
+## JSON Response Validation Telemetry
+- Error observed: `[VALIDATION_ERROR] Failed to parse OpenAI response as JSON` when the model returned non-strict or fenced text.
+- Root cause: the app attempted `json.loads()` directly on raw model output, which could include markdown fences, extra text, or empty responses.
+- Fix strategy: enforce strict JSON in the prompt, remove markdown code fences, validate non-empty output, and attempt safe parsing.
+- Safe parsing behavior: raw response is stripped, fenced code blocks are removed, empty responses are treated as validation failures, and malformed JSON triggers fallback.
+- Fallback behavior: application logs the response preview and returns a safe fallback transaction without crashing.
+
+---
+
 ## Error Classification & Logging
 
 ### Error Categories
