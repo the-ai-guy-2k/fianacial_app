@@ -17,9 +17,16 @@ def validate_preflight():
         msg = log_error(ErrorCategory.CONFIG_ERROR, "Flask secret_key missing from config.json")
         errors.append(msg)
     
-    # Check OpenAI API key file path exists
+    # Check OpenAI API key path or environment variable
+    env_key = os.getenv('OPENAI_API_KEY')
     api_key_file = config.get('openai.api_key_file')
-    if not api_key_file:
+    if env_key:
+        if env_key.strip():
+            log_info("OpenAI API key loaded from OPENAI_API_KEY environment variable")
+        else:
+            msg = log_error(ErrorCategory.API_KEY_ERROR, "OPENAI_API_KEY is set but empty")
+            errors.append(msg)
+    elif not api_key_file:
         msg = log_error(ErrorCategory.API_KEY_ERROR, "openai.api_key_file path missing from config.json")
         errors.append(msg)
     elif not os.path.exists(api_key_file):

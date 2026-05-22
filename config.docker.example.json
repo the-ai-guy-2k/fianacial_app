@@ -1,0 +1,18 @@
+{
+  "flask": {
+    "secret_key": "theaiguyfreakout"
+  },
+  "openai": {
+    "api_key_file": "/run/secrets/openai_key.txt",
+    "model": "gpt-4o-mini"
+  },
+  "upload": {
+    "folder": "uploads",
+    "max_size_mb": 10,
+    "allowed_receipt_formats": ["png", "jpg", "jpeg", "webp"],
+    "allowed_csv_format": "csv"
+  },
+  "data": {
+    "folder": "data"
+  }
+}

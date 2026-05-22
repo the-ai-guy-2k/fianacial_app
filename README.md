@@ -55,7 +55,7 @@ pytest -v
 
 ## Docker
 
-This project is containerized and automatically published to Docker Hub.
+This project is containerized with support for local development and automated Docker Hub publishing.
 
 ### Local Development with Docker
 
@@ -64,19 +64,24 @@ Build the image locally:
 docker build -t financial-nebula-node:local .
 ```
 
-Run the container:
+Run the container with a mounted config file and OpenAI key:
 ```powershell
-docker run --rm -p 5000:5000 financial-nebula-node:local
+docker run --rm -p 5000:5000 `
+  -v "%cd%\config.docker.json:/app/config.json" `
+  -v "C:\Users\tim\Desktop\openai_key_for_financial_app.txt:/run/secrets/openai_key.txt" `
+  financial-nebula-node:local
 ```
+
+Then open: http://127.0.0.1:5000
 
 ### Automated Docker Hub Publishing
 
 - **Image Location:** `taig2k/financial-nebula-node`
-- **Feature branches:** Build Docker image for validation only
-- **Deployable branch:** Build and publish image to Docker Hub automatically
-- **Image tags:** `latest` and commit SHA for each deployment
+- **Feature branches:** Build Docker image for CI validation only (no push)
+- **Deployable branch:** Automatically build and publish image to Docker Hub on merge
+- **Image tags:** `latest` (current) and commit SHA (immutable)
 
-See [DOCKER_USAGE.md](docs/DOCKER_USAGE.md) for detailed container instructions.
+See [DOCKER_USAGE.md](docs/DOCKER_USAGE.md) for detailed instructions and troubleshooting.
 
 ## Docs
 
