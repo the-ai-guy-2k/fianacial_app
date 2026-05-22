@@ -2,42 +2,132 @@
 {% block content %}
 <h2>Dashboard</h2>
 
-<section>
-  <h3>Goals</h3>
-  <ul>
-    {% for goal in goals %}
-      <li><strong>{{ goal.name }}</strong>: ${{ goal.target }} - {{ goal.description }}</li>
-    {% endfor %}
-  </ul>
-</section>
+{% if goals %}
+  <section>
+    <h3>Savings Goals</h3>
+    <div class="goals-grid">
+      {% for goal in goals %}
+        <div class="goal-card">
+          <strong>{{ goal.name }}</strong>
+          <p class="goal-target">${{ goal.target }}</p>
+          <p class="goal-description">{{ goal.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
 
 <section>
   <h3>Transactions</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Date</th>
-        <th>Merchant</th>
-        <th>Category</th>
-        <th>Amount</th>
-        <th>Note</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in transactions %}
-        <tr>
-          <td>{{ t.id[:8] }}</td>
-          <td>{{ t.date }}</td>
-          <td>{{ t.merchant }}</td>
-          <td>{{ t.category }}</td>
-          <td>${{ t.amount }}</td>
-          <td>{{ t.note }}</td>
-        </tr>
-      {% else %}
-        <tr><td colspan="6">No transactions yet.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% if transactions %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Merchant</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in transactions %}
+            <tr>
+              <td>{{ t.date or 'N/A' }}</td>
+              <td><strong>{{ t.merchant }}</strong></td>
+              <td>
+                <span class="category-badge">{{ t.category }}</span>
+              </td>
+              <td class="amount-cell">${{ "%.2f"|format(t.amount|float) if t.amount else '0.00' }}</td>
+              <td class="note-cell">{{ t.note or '—' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="no-data">No transactions yet. <a href="/upload_receipt">Upload a receipt</a> or <a href="/add_transaction">add a transaction</a> to get started.</p>
+  {% endif %}
 </section>
 {% endblock %}
+
+<style>
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.goal-card {
+  background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%);
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.goal-card strong {
+  display: block;
+  color: #7c3aed;
+  margin-bottom: 0.5rem;
+}
+
+.goal-target {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #6d28d9;
+  margin: 0.5rem 0;
+}
+
+.goal-description {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0.5rem 0 0 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.category-badge {
+  display: inline-block;
+  background-color: #e0e7ff;
+  color: #4f46e5;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.amount-cell {
+  font-weight: 600;
+  color: #7c3aed;
+}
+
+.note-cell {
+  color: #718096;
+  font-size: 0.9rem;
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+.no-data {
+  color: #718096;
+  text-align: center;
+  padding: 2rem;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.no-data a {
+  color: #7c3aed;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.no-data a:hover {
+  text-decoration: underline;
+}
+</style>

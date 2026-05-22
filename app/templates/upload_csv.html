@@ -1,11 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Upload CSV</h2>
-<form method="post" enctype="multipart/form-data">
-  <label>CSV file: <input type="file" name="csvfile" accept=".csv" required></label>
-  <br/><small>CSV header should include: date, merchant, amount, category (optional), note (optional)</small>
-  <br/><small>Max size: 10MB</small>
-  <br/><br/>
-  <button type="submit">Upload</button>
-</form>
+
+<section>
+  <h3>Import Transactions from CSV</h3>
+  <form method="post" enctype="multipart/form-data">
+    <div>
+      <label for="csvfile">Select CSV file:</label>
+      <input type="file" id="csvfile" name="csvfile" accept=".csv" required>
+      <small>Maximum file size: 10MB</small>
+    </div>
+    <button type="submit">Upload CSV</button>
+  </form>
+
+  <div style="margin-top: 1.5rem; padding: 1rem; background-color: #f0f9ff; border-left: 4px solid #3b82f6; border-radius: 6px;">
+    <p style="margin: 0 0 0.5rem 0; font-weight: 500;">CSV Format Requirements</p>
+    <small style="color: #475569;">
+      Your CSV file should include these columns:<br/>
+      • <strong>date</strong> (required, format: YYYY-MM-DD)<br/>
+      • <strong>merchant</strong> (required)<br/>
+      • <strong>amount</strong> (required)<br/>
+      • <strong>category</strong> (optional)<br/>
+      • <strong>note</strong> (optional)
+    </small>
+  </div>
+</section>
 {% endblock %}

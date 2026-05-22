@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Behavioral Insights</h2>
-<pre>{{ insights }}</pre>
+
+<section>
+  <h3>Analysis</h3>
+  {% if insights %}
+    <pre>{{ insights }}</pre>
+  {% else %}
+    <p style="color: #718096;">No insights available yet. Add some transactions to generate insights.</p>
+  {% endif %}
+</section>
 {% endblock %}
