@@ -1,0 +1,13 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.git/
+.env
+*.log
+logs/
+uploads/
+data/
+config.json
+*openai*key*
+.DS_Store

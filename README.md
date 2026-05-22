@@ -53,6 +53,25 @@ Error categories: CONFIG_ERROR, API_KEY_ERROR, FILE_UPLOAD_ERROR, CSV_PARSE_ERRO
 pytest -v
 ```
 
+## Docker
+
+This project now includes container support for local development and consistent runtime environments.
+
+Build the image locally:
+```powershell
+docker build -t financial-nebula-node:local .
+```
+
+Run the container with a mounted config file and OpenAI key:
+```powershell
+docker run --rm -p 5000:5000 `
+  -v "%cd%\config.docker.json:/app/config.json" `
+  -v "C:\Users\tim\Desktop\openai_key_for_financial_app.txt:/run/secrets/openai_key.txt" `
+  financial-nebula-node:local
+```
+
+Open: http://127.0.0.1:5000
+
 ## Docs
 
 - [PCAP.md](docs/PCAP.md) - Project architecture

@@ -34,3 +34,7 @@ jobs:
       - name: Run tests
         run: |
           pytest tests/ -v
+
+      - name: Validate Docker build
+        run: |
+          docker build -t financial-nebula-node:test .

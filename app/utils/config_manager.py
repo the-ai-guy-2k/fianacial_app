@@ -3,7 +3,8 @@ import json
 from app.utils.logging_service import ErrorCategory, log_error, log_info
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-CONFIG_FILE = os.path.join(ROOT, 'config.json')
+DEFAULT_CONFIG_FILE = os.path.join(ROOT, 'config.json')
+CONFIG_FILE = os.environ.get('CONFIG_FILE', DEFAULT_CONFIG_FILE)
 
 
 class ConfigManager:
@@ -26,6 +27,10 @@ class ConfigManager:
             self.errors.append(msg)
 
     def get(self, key, default=None):
+        if key == 'openai.api_key_file':
+            env_override = os.getenv('OPENAI_API_KEY_FILE')
+            if env_override:
+                return env_override
         if not self.config:
             return default
         keys = key.split('.')

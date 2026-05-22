@@ -11,17 +11,21 @@ class OpenAIService:
     """
 
     def __init__(self):
-        self.api_key = None
+        self.api_key = os.getenv('OPENAI_API_KEY')
         self.model = config.get('openai.model', 'gpt-4o-mini')
-        api_key_file = config.get('openai.api_key_file')
-        
-        if api_key_file and os.path.exists(api_key_file):
-            try:
-                with open(api_key_file, 'r', encoding='utf-8') as fh:
-                    self.api_key = fh.read().strip()
-                log_info(f"OpenAI API key loaded from config path")
-            except Exception as e:
-                log_error(ErrorCategory.API_KEY_ERROR, "Failed to load OpenAI API key", e)
+
+        if self.api_key:
+            self.api_key = self.api_key.strip()
+            log_info("OpenAI API key loaded from OPENAI_API_KEY environment variable")
+        else:
+            api_key_file = config.get('openai.api_key_file')
+            if api_key_file and os.path.exists(api_key_file):
+                try:
+                    with open(api_key_file, 'r', encoding='utf-8') as fh:
+                        self.api_key = fh.read().strip()
+                    log_info(f"OpenAI API key loaded from config path")
+                except Exception as e:
+                    log_error(ErrorCategory.API_KEY_ERROR, "Failed to load OpenAI API key", e)
 
         self._client = None
 

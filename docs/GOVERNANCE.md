@@ -59,14 +59,24 @@ feat: add preflight validation for config and API key
 - Use feature branches for all UI changes and validate locally before merging.
 - Avoid flashy animations, dark-mode-only designs, or overbuilt dashboard widgets.
 
+## Docker Governance
+
+- Never bake secrets into container images.
+- Use mounted files or environment variables for API keys and sensitive configuration.
+- Validate Docker builds in CI before any deployment promotion.
+- Docker Hub pushes require explicit approval and must not happen automatically.
+- Deployable branch must pass Docker build validation before promotion.
+- Containerization changes must be developed on a feature branch and validated locally.
+
 ## MVP Scope Lock
 
 Do NOT add:
 - Database
-- Docker/containers
 - Authentication
 - Advanced UI frameworks
 - Microservices
 - Cloud infrastructure
+
+Containerization is allowed only through explicit Docker feature branches and CI-validated workflows.
 
 Focus on: local-first, operationally testable execution.
