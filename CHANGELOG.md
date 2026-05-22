@@ -22,3 +22,7 @@
 - **Dashboard successfully displayed parsed merchant, category, amount, subtotal, tax, and total**: end-to-end receipt parsing output verified in UI.
 - **Clean MVP UI theme implemented**: professional light-themed interface with improved readability, consistent navigation, and polished styling applied across all pages.
 - **Deployable promotion prepared**: first operational AI-powered Financial Nebula Node MVP ready for deployable merge with validated receipt parsing, governance tracking, and CI/CD workflow.
+
+## 2026-05-22
+
+- **Docker Hub publishing pipeline added**: GitHub Actions automatically publishes images to Docker Hub on deployable branch merges with latest and commit SHA tagging.

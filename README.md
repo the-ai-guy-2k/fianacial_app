@@ -53,6 +53,31 @@ Error categories: CONFIG_ERROR, API_KEY_ERROR, FILE_UPLOAD_ERROR, CSV_PARSE_ERRO
 pytest -v
 ```
 
+## Docker
+
+This project is containerized and automatically published to Docker Hub.
+
+### Local Development with Docker
+
+Build the image locally:
+```powershell
+docker build -t financial-nebula-node:local .
+```
+
+Run the container:
+```powershell
+docker run --rm -p 5000:5000 financial-nebula-node:local
+```
+
+### Automated Docker Hub Publishing
+
+- **Image Location:** `taig2k/financial-nebula-node`
+- **Feature branches:** Build Docker image for validation only
+- **Deployable branch:** Build and publish image to Docker Hub automatically
+- **Image tags:** `latest` and commit SHA for each deployment
+
+See [DOCKER_USAGE.md](docs/DOCKER_USAGE.md) for detailed container instructions.
+
 ## Docs
 
 - [PCAP.md](docs/PCAP.md) - Project architecture

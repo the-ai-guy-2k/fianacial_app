@@ -59,11 +59,22 @@ feat: add preflight validation for config and API key
 - Use feature branches for all UI changes and validate locally before merging.
 - Avoid flashy animations, dark-mode-only designs, or overbuilt dashboard widgets.
 
+## Docker Governance
+
+- Feature branches build Docker images only (no Docker Hub push).
+- Deployable branch builds and automatically publishes images to Docker Hub.
+- Docker Hub credentials are stored only as GitHub Actions secrets.
+- Docker Hub publishing requires all CI tests to pass first.
+- Docker Hub publishing is blocked if any test or build step fails.
+- Docker images are tagged with `latest` and commit SHA.
+- No secrets are baked into images; all configs are mounted at runtime.
+
 ## MVP Scope Lock
+
+Containerization is allowed through explicit feature branches and CI-validated workflows.
 
 Do NOT add:
 - Database
-- Docker/containers
 - Authentication
 - Advanced UI frameworks
 - Microservices
