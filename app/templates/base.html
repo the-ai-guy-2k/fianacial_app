@@ -7,30 +7,44 @@
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
-    <header>
-      <h1>Financial Nebula Node — MVP</h1>
-      <nav>
-        <a href="/">Dashboard</a> |
-        <a href="/upload_receipt">Upload Receipt</a> |
-        <a href="/upload_csv">Upload CSV</a> |
-        <a href="/add_transaction">Add Transaction</a> |
-        <a href="/insights">Insights</a>
-      </nav>
-    </header>
-    <main>
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <ul class="flashes">
-            {% for cat, msg in messages %}
-              <li class="{{ cat }}">{{ msg }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      {% endwith %}
-      {% block content %}{% endblock %}
-    </main>
-    <footer>
-      <small>Local-first MVP — Financial Nebula Node</small>
-    </footer>
+    <div class="app-container">
+      <header class="app-header">
+        <div class="header-content">
+          <div class="logo-section">
+            <h1>Financial Nebula Node</h1>
+            <p class="subtitle">MVP</p>
+          </div>
+          <nav class="app-nav">
+            <a href="/" class="nav-link">Dashboard</a>
+            <a href="/upload_receipt" class="nav-link">Receipt</a>
+            <a href="/upload_csv" class="nav-link">CSV</a>
+            <a href="/add_transaction" class="nav-link">Add</a>
+            <a href="/insights" class="nav-link">Insights</a>
+          </nav>
+        </div>
+      </header>
+
+      <main class="app-main">
+        <div class="content-wrapper">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="message-area">
+                {% for cat, msg in messages %}
+                  <div class="message message-{{ cat }}">
+                    <span class="message-text">{{ msg }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+          
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <p class="footer-text">Local-first MVP — Financial Nebula Node</p>
+      </footer>
+    </div>
   </body>
 </html>

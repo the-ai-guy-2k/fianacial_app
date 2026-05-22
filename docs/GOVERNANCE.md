@@ -50,6 +50,15 @@ feat: add preflight validation for config and API key
 - Every AI/Copilot execution failure should be classified and logged.
 - Logs should support future troubleshooting, passdowns, and operational continuity.
 
+## UI Governance
+
+- MVP UI must remain functional-first and professional.
+- UI must not imply features that do not exist.
+- Visual improvements should support operational clarity and readability.
+- Keep styling lightweight and maintainable (CSS-only, no complex frameworks).
+- Use feature branches for all UI changes and validate locally before merging.
+- Avoid flashy animations, dark-mode-only designs, or overbuilt dashboard widgets.
+
 ## MVP Scope Lock
 
 Do NOT add:
