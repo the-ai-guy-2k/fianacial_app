@@ -21,3 +21,4 @@
 - **Successful Walmart receipt parsing validated**: operational validation confirmed merchant, category, amount, subtotal, tax, and total extraction.
 - **Dashboard successfully displayed parsed merchant, category, amount, subtotal, tax, and total**: end-to-end receipt parsing output verified in UI.
 - **Clean MVP UI theme implemented**: professional light-themed interface with improved readability, consistent navigation, and polished styling applied across all pages.
+- **Deployable promotion prepared**: first operational AI-powered Financial Nebula Node MVP ready for deployable merge with validated receipt parsing, governance tracking, and CI/CD workflow.
