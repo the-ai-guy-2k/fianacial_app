@@ -81,3 +81,25 @@ Do NOT add:
 - Cloud infrastructure
 
 Focus on: local-first, operationally testable execution.
+
+## Branch Closeout Governance
+
+Feature branches follow this lifecycle:
+
+ACTIVE
+→ VALIDATED
+→ MERGED or NOT_MERGED
+→ CLOSED
+
+Rules:
+- Closed branches are historical artifacts only.
+- No further development should continue on closed branches.
+- New work requires a new feature branch.
+- Branch closeout records must be created for completed feature branches in `docs/branch_closeouts/`.
+- Remote branch deletion requires explicit user approval and is NOT performed automatically.
+
+Include the branch closeout process in N.O.C. Art Guidance to prevent AIWs from continuing work on completed branches.
+
+N.O.C. Guidance Note:
+- Branch closeout guidance should be included in any future N.O.C. Art Guidance so AI Workers do not continue work on completed branches.
+
